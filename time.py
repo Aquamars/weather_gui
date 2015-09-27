@@ -6,7 +6,7 @@ import sys
 from Tkinter import *
 import Tkinter
 from PIL import Image, ImageTk
- 
+import re
 
 ##print time
 import time
@@ -34,11 +34,17 @@ for c in trs:
 	rows = c.findAll('tr')
 	cols = rows[7].findAll('td')
 	tc=cols[1].get_text()
-	print tc
+	# print tc
 	# col_value(rows)
 	# print "**************"
 ##
 
+## To get weather icon
+resp = urllib2.urlopen('http://www.cwb.gov.tw/V7/forecast/taiwan/Taichung_City.htm')
+soup = BeautifulSoup(resp)
+trs=[x['src'] for x in soup.findAll('img')]
+icon_url = re.sub('../../', "http://www.cwb.gov.tw/V7/", trs[0])  
+img = cStringIO.StringIO(urllib.urlopen(icon_url).read())
 
 ##	
 root = Tk()
@@ -49,8 +55,8 @@ frame.pack()
 t_label = Label(frame, text="Taichung City: {t} °c".format(t=tc), width="30", height="5")
 t_label.pack(side = LEFT)
 
-file = cStringIO.StringIO(urllib.urlopen("http://www.cwb.gov.tw/V7/symbol/weather/gif/night/05.gif").read())
-image = Image.open(file)
+
+image = Image.open(img)
 photo = ImageTk.PhotoImage(image)
 background_label = Label(frame, image=photo)
 background_label.place(x=0, y=0, relwidth=1, relheight=1)
