@@ -41,11 +41,14 @@ def get_tc_t():
 ##
 
 ## To get weather icon
-resp = urllib2.urlopen('http://www.cwb.gov.tw/V7/forecast/taiwan/Taichung_City.htm')
-soup = BeautifulSoup(resp)
-trs=[x['src'] for x in soup.findAll('img')]
-icon_url = re.sub('../../', "http://www.cwb.gov.tw/V7/", trs[0])  
-img = cStringIO.StringIO(urllib.urlopen(icon_url).read())
+def get_icon():
+	resp = urllib2.urlopen('http://www.cwb.gov.tw/V7/forecast/taiwan/Taichung_City.htm')
+	soup = BeautifulSoup(resp)
+	trs=[x['src'] for x in soup.findAll('img')]
+	icon_url = re.sub('../../', "http://www.cwb.gov.tw/V7/", trs[0])  
+	img = cStringIO.StringIO(urllib.urlopen(icon_url).read())
+	return img
+##
 
 ## build gui
 root = Tk()
@@ -59,7 +62,8 @@ t_label = Label(frame, font=('times', 15, 'bold'), width="25", height="5")
 t_label.config(text="Taichung City: {t} °c".format(t=tc_t))
 t_label.pack(side = LEFT)
 #display weather icon
-image = Image.open(img)
+img_o=get_icon()
+image = Image.open(get_icon())
 photo = ImageTk.PhotoImage(image)
 background_label = Label(frame, image=photo)
 background_label.place(x=0, y=0, relwidth=1, relheight=1)
@@ -83,14 +87,23 @@ def tick():
     # could use >200 ms, but display gets jerky
     clock.after(200, tick)
 tick()
-#Dynamic temperature
+#Dynamic temperature & icon
 def tick2():
 	global tc_t
 	tc_now = get_tc_t()
 	if tc_now != tc_t:
 		tc_t = tc_now
 		t_label.config(text="Taichung City: {t} °c".format(t=tc_t))
-	t_label.after(300000, tick)
+	t_label.after(60000, tick2)
+	
+	global img_o
+	img_now=get_icon()
+	if img_now != img_o:
+		img_o = img_now
+		image = Image.open(img_o)
+		photo = ImageTk.PhotoImage(image)
+		background_label.config = Label(image=photo)
+	background_label.after(60000, tick2)
 tick2()
 
 root.mainloop()
