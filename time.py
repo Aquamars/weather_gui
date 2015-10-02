@@ -103,7 +103,7 @@ def tick2():
 		image = Image.open(img_o)
 		photo = ImageTk.PhotoImage(image)
 		background_label.config = Label(image=photo)
-	# background_label.after(60000, tick2)
+	background_label.after(60000, tick2)
 tick2()
 
 root.mainloop()
