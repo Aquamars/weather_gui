@@ -97,12 +97,15 @@ def tick2():
 	t_label.after(60000, tick2)
 	
 	global img_o
+	global background_label
 	img_now=get_icon()
-	if img_now != img_o:
-		img_o = img_now
-		image = Image.open(img_o)
-		photo = ImageTk.PhotoImage(image)
-		background_label.config = Label(image=photo)
+	background_label.destroy()
+	image = Image.open(img_now)
+	photo = ImageTk.PhotoImage(image)
+	background_label = Label(frame, image=photo)
+	background_label.image=photo
+	background_label.place(x=0, y=0, relwidth=1, relheight=1)
+	background_label.pack(side = LEFT)
 	background_label.after(60000, tick2)
 tick2()
 
